@@ -55,15 +55,21 @@ def understand_question(question):
     ):
         return "profit_margin"
 
-        if (
+    # ========================================================
+    # HIGHEST SALES / PROFIT
+    # ========================================================
+
+    if (
         "highest sales region" in q
         or "region has the highest sales" in q
+        or "which region has the highest sales" in q
     ):
-         return "highest_sales_region"
+        return "highest_sales_region"
 
     if (
         "highest sales category" in q
         or "category has the highest sales" in q
+        or "which category has the highest sales" in q
     ):
         return "highest_sales_category"
 
@@ -71,13 +77,20 @@ def understand_question(question):
         "highest profit region" in q
         or "region has the highest profit" in q
         or "most profitable region" in q
+        or "which region has the highest profit" in q
     ):
         return "highest_profit_region"
+
     # ========================================================
     # COMPARISON
     # ========================================================
 
-    region_names = ["west", "east", "south", "central"]
+    region_names = [
+        "west",
+        "east",
+        "south",
+        "central"
+    ]
 
     category_names = [
         "technology",
@@ -270,22 +283,7 @@ def generate_answer(question):
             f"The average order value is "
             f"₹{average_order_value:,.2f}."
         )
-        # ========================================================
-    # HIGHEST PROFIT REGION
-    # ========================================================
 
-    if analysis_type == "highest_profit_region":
-
-        data = get_highest_profit_region()
-
-        if not data:
-            return "No region profit data found."
-
-        return (
-            f"The region with the highest profit is "
-            f"{data[0]}, with profit of "
-            f"₹{data[1]:,.2f}."
-        )
     # ========================================================
     # TOTAL ORDERS
     # ========================================================
@@ -387,6 +385,23 @@ def generate_answer(question):
         )
 
     # ========================================================
+    # HIGHEST PROFIT REGION
+    # ========================================================
+
+    if analysis_type == "highest_profit_region":
+
+        data = get_highest_profit_region()
+
+        if not data:
+            return "No region profit data found."
+
+        return (
+            f"The region with the highest profit is "
+            f"{data[0]}, with profit of "
+            f"₹{data[1]:,.2f}."
+        )
+
+    # ========================================================
     # COMPARE REGIONS
     # ========================================================
 
@@ -435,7 +450,8 @@ def generate_answer(question):
         difference = winner[2] - loser[2]
 
         return (
-            f"{winner[0]} is more profitable than {loser[0]}.\n\n"
+            f"{winner[0]} is more profitable than "
+            f"{loser[0]}.\n\n"
             f"{winner[0]} profit: ₹{winner[2]:,.2f}\n"
             f"{loser[0]} profit: ₹{loser[2]:,.2f}\n"
             f"Profit difference: ₹{difference:,.2f}"
@@ -489,7 +505,8 @@ def generate_answer(question):
         difference = winner[2] - loser[2]
 
         return (
-            f"{winner[0]} is more profitable than {loser[0]}.\n\n"
+            f"{winner[0]} is more profitable than "
+            f"{loser[0]}.\n\n"
             f"{winner[0]} profit: ₹{winner[2]:,.2f}\n"
             f"{loser[0]} profit: ₹{loser[2]:,.2f}\n"
             f"Profit difference: ₹{difference:,.2f}"
@@ -584,7 +601,7 @@ def generate_answer(question):
         return answer
 
     # ========================================================
-    # CATEGORY
+    # CATEGORY ANALYSIS
     # ========================================================
 
     if analysis_type == "category":
@@ -606,7 +623,7 @@ def generate_answer(question):
         )
 
     # ========================================================
-    # REGION
+    # REGION ANALYSIS
     # ========================================================
 
     if analysis_type == "region":
@@ -628,7 +645,7 @@ def generate_answer(question):
         )
 
     # ========================================================
-    # PRODUCT
+    # PRODUCT ANALYSIS
     # ========================================================
 
     if analysis_type == "product":
@@ -650,7 +667,7 @@ def generate_answer(question):
         )
 
     # ========================================================
-    # MONTHLY
+    # MONTHLY ANALYSIS
     # ========================================================
 
     if analysis_type == "monthly":
@@ -705,7 +722,7 @@ def generate_answer(question):
         return f"Total profit is ₹{profit:,.2f}."
 
     # ========================================================
-    # UNKNOWN
+    # UNKNOWN QUESTION
     # ========================================================
 
     return (
