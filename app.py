@@ -903,13 +903,3 @@ elif page == "Ask the Analyst":
                 """
             )
 
-
-# ============================================================
-# FOOTER
-# ============================================================
-
-st.divider()
-
-st.caption(
-    "AI Business Analyst | Python + SQL + MySQL + Streamlit"
-)
