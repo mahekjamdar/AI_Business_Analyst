@@ -25,7 +25,7 @@ def get_total_sales_profit():
 
     cursor.execute("""
         SELECT SUM(sales), SUM(profit)
-        FROM sales_data
+        FROM sales_data_clean
     """)
 
     result = cursor.fetchone()
