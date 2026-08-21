@@ -2,19 +2,22 @@
 
 An interactive **Business Intelligence and Analytics platform** built using **Python, SQL, MySQL, Power BI, and Streamlit** to analyze sales, profit, products, categories, regions, and business trends.
 
-##  Live Demo
+## 🚀 Live Demo
 
 **Streamlit App:**
 https://ai-business-analyst-mahek.streamlit.app/
 
-**GitHub:**
+**GitHub Repository:**
 https://github.com/mahekjamdar/AI_Business_Analyst
 
-##  Power BI Dashboard
+## 📊 Power BI Dashboard
 
 The project includes an interactive **Power BI dashboard** for business performance analysis.
 
 ![AI Business Analyst Power BI Dashboard](https://github.com/mahekjamdar/AI_Business_Analyst/raw/main/ai%20bussiness%20analyst.png)
+
+**Power BI File:** `ai bussines dashboard.pbix`
+
 The dashboard covers:
 
 * Sales & Profit
@@ -23,7 +26,7 @@ The dashboard covers:
 * Category & Product Analysis
 * Monthly Trends
 
-##  Features
+## ✨ Features
 
 * 📊 Executive Business Dashboard
 * 🌍 Regional Analysis
@@ -32,11 +35,11 @@ The dashboard covers:
 * 🤖 AI-powered **Ask the Analyst**
 * 🗄️ SQL & MySQL Business Analysis
 
-##  Tech Stack
+## 🛠️ Tech Stack
 
 **Python | Pandas | SQL | MySQL | Power BI | Plotly | Streamlit | GitHub**
 
-##  Project Structure
+## 📁 Project Structure
 
 ```text
 AI_Business_Analyst/
@@ -50,7 +53,7 @@ AI_Business_Analyst/
 └── ai bussiness analyst.png
 ```
 
-##  Example Questions
+## 💡 Example Questions
 
 ```text
 Which region has the highest profit?
@@ -59,13 +62,12 @@ Which category has the highest profit?
 What is the highest sales month?
 ```
 
-##  Objective
+## 🎯 Objective
 
 To build an **end-to-end Business Analytics solution** that transforms business data into interactive dashboards and actionable insights using **Python, SQL, AI, Power BI, and Streamlit**.
 
-##  Author
-Mahek Jamadar
-Aspiring Data Analyst | Python | SQL | Power BI | Data Analytics
+## 👩‍💻 Author
 
 **Mahek Jamadar**
+
 Aspiring Data Analyst | Python | SQL | Power BI | Data Analytics
