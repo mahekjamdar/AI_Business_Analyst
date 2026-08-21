@@ -1,66 +1,74 @@
 # AI Business Analyst
 
-An interactive **Business Intelligence and Analytics platform** built using Python, SQL, MySQL, and Streamlit to analyze sales, profit, products, categories, regions, and monthly business trends.
+An interactive **Business Intelligence and Analytics platform** built using **Python, SQL, MySQL, Power BI, and Streamlit** to analyze sales, profit, products, categories, regions, and business trends.
 
 ##  Live Demo
 
-**Streamlit App:** https://ai-business-analyst-mahek.streamlit.app/
+**Streamlit App:**
+https://ai-business-analyst-mahek.streamlit.app/
 
-**GitHub:** https://github.com/mahekjamdar/AI_Business_Analyst
+**GitHub:**
+https://github.com/mahekjamdar/AI_Business_Analyst
+
+##  Power BI Dashboard
+
+The project includes an interactive **Power BI dashboard** for business performance analysis.
+
+![AI Business Analyst Power BI Dashboard](ai%20bussiness%20analyst.png)
+
+**Power BI File:** `ai bussines dashboard.pbix`
+
+The dashboard covers:
+
+* Sales & Profit
+* Orders & Profit Margin
+* Regional Performance
+* Category & Product Analysis
+* Monthly Trends
 
 ##  Features
 
-* **Executive Dashboard** – KPIs including Sales, Profit, Orders, Profit Margin, AOV, and Discounts
-* **Regional Analysis** – Sales, profit, and profitability by region
-* **Category Analysis** – Category-wise sales and profit performance
-* **Product Analysis** – Top products by sales and profit
-* **Monthly Trends** – Monthly sales and profit analysis
-* **Ask the Analyst** – Ask business questions and receive data-driven answers
-
-##  Key Insights
-
-* **Total Sales:** ₹4,653,069.04
-* **Total Profit:** ₹584,595.14
-* **Profit Margin:** 12.56%
-* **Highest Sales Region:** West – ₹1,479,627.42
-* **Highest Profit Region:** West – ₹221,598.30
-* **Highest Sales Category:** Technology – ₹1,679,786.70
-* **Highest Profit Category:** Technology – ₹293,088.18
-* **Highest Sales Month:** November 2025 – ₹236,908.98
+* 📊 Executive Business Dashboard
+* 🌍 Regional Analysis
+* 📦 Category & Product Analysis
+* 📈 Monthly Sales & Profit Trends
+* 🤖 AI-powered **Ask the Analyst**
+* 🗄️ SQL & MySQL Business Analysis
 
 ##  Tech Stack
 
-**Python | SQL | MySQL / Aiven | Pandas | Plotly | Streamlit | GitHub**
+**Python | Pandas | SQL | MySQL | Power BI | Plotly | Streamlit | GitHub**
 
 ##  Project Structure
 
-```text id="0yqk9l"
+```text
 AI_Business_Analyst/
 ├── app.py
 ├── ai_analyst.py
 ├── analyst.py
 ├── database.py
 ├── requirements.txt
-├── .gitignore
-└── README.md
+├── README.md
+├── ai bussines dashboard.pbix
+└── ai bussiness analyst.png
 ```
 
 ##  Example Questions
 
-```text id="r1a9x4"
+```text
 Which region has the highest profit?
 What is the profit margin?
-Compare West and East
 Which category has the highest profit?
 What is the highest sales month?
 ```
 
 ##  Objective
 
-To build an end-to-end analytics solution that transforms business data into **interactive dashboards and actionable business insights** using Python, SQL, and AI.
+To build an **end-to-end Business Analytics solution** that transforms business data into interactive dashboards and actionable insights using **Python, SQL, AI, Power BI, and Streamlit**.
 
 ##  Author
+Mahek Jamadar
+Aspiring Data Analyst | Python | SQL | Power BI | Data Analytics
 
 **Mahek Jamadar**
-
 Aspiring Data Analyst | Python | SQL | Power BI | Data Analytics
