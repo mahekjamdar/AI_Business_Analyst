@@ -14,7 +14,7 @@ https://github.com/mahekjamdar/AI_Business_Analyst
 
 The project includes an interactive **Power BI dashboard** for business performance analysis.
 
-![AI Business Analyst Power BI Dashboard](https://github.com/mahekjamdar/AI_Business_Analyst/raw/main/ai%20bussiness%20analyst.png)
+![AI Business Analyst Power BI Dashboard](Ai_bussiness_analyst.png)
 
 **Power BI File:** `ai bussines dashboard.pbix`
 
