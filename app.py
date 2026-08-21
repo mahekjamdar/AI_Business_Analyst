@@ -3,18 +3,18 @@ import pandas as pd
 import plotly.express as px
 
 from analyst import (
+    get_total_sales_profit,
     get_business_kpis,
     get_highest_sales_region,
     get_highest_sales_category,
-    get_total_sales_profit,
     get_category_analysis,
     get_region_analysis,
     get_top_products,
+    get_top_products_by_profit,
     get_monthly_sales,
     get_top_regions,
     get_bottom_regions,
     get_top_categories,
-    get_top_products_by_profit,
     compare_regions,
     compare_categories,
 )
@@ -28,7 +28,6 @@ st.set_page_config(
     page_title="AI Business Analyst",
     page_icon="📊",
     layout="wide",
-    initial_sidebar_state="expanded"
 )
 
 
@@ -62,7 +61,7 @@ def load_data():
         "top_products": get_top_products(10),
         "top_products_profit": get_top_products_by_profit(5),
 
-        "monthly_data": get_monthly_sales()
+        "monthly_data": get_monthly_sales(),
     }
 
 
@@ -78,11 +77,9 @@ except Exception as e:
 
     st.error("❌ Could not connect to the MySQL database.")
 
-    st.error(str(e))
+    st.write("Error details:")
 
-    st.info(
-        "Check your database credentials and Streamlit Secrets."
-    )
+    st.code(str(e))
 
     st.stop()
 
@@ -92,7 +89,6 @@ except Exception as e:
 # ============================================================
 
 sales = data["sales"]
-
 profit = data["profit"]
 
 kpis = data["kpis"]
@@ -140,22 +136,19 @@ with st.sidebar:
             "Category Analysis",
             "Product Analysis",
             "Monthly Trends",
-            "Ask the Analyst"
-        ]
+            "Ask the Analyst",
+        ],
     )
 
     st.divider()
 
-    st.caption("Data Source")
-
-    st.write("MySQL")
+    st.caption("Database")
+    st.write("MySQL / Aiven")
 
     st.caption("Analytics")
-
     st.write("Python + SQL")
 
     st.caption("Dashboard")
-
     st.write("Streamlit")
 
 
@@ -163,7 +156,7 @@ with st.sidebar:
 # HEADER
 # ============================================================
 
-st.title("📊 AI Business Analyst")
+st.title("AI Business Analyst")
 
 st.caption(
     "Interactive business intelligence and performance analytics platform"
@@ -223,7 +216,7 @@ if page == "Executive Dashboard":
         f"{average_discount:.2%}"
     )
 
-    # BUSINESS INSIGHTS
+    # INSIGHTS
 
     st.subheader("Key Business Insights")
 
@@ -238,13 +231,9 @@ if page == "Executive Dashboard":
         if region:
 
             st.info(
-                f"""
-                **Region with Highest Sales**
-
-                ### {region[0]}
-
-                Sales: ₹{float(region[1]):,.2f}
-                """
+                f"### Region with Highest Sales\n\n"
+                f"**{region[0]}**\n\n"
+                f"Sales: ₹{float(region[1]):,.2f}"
             )
 
     with c2:
@@ -252,16 +241,12 @@ if page == "Executive Dashboard":
         if category:
 
             st.info(
-                f"""
-                **Category with Highest Sales**
-
-                ### {category[0]}
-
-                Sales: ₹{float(category[1]):,.2f}
-                """
+                f"### Category with Highest Sales\n\n"
+                f"**{category[0]}**\n\n"
+                f"Sales: ₹{float(category[1]):,.2f}"
             )
 
-    # REGIONAL PROFIT CHART
+    # REGION PROFIT CHART
 
     st.subheader("Regional Profit Performance")
 
@@ -274,8 +259,8 @@ if page == "Executive Dashboard":
             columns=[
                 "Region",
                 "Sales",
-                "Profit"
-            ]
+                "Profit",
+            ],
         )
 
         df["Sales"] = pd.to_numeric(
@@ -288,28 +273,28 @@ if page == "Executive Dashboard":
             errors="coerce"
         )
 
-        df = df.sort_values(
+        chart_df = df.sort_values(
             "Profit",
             ascending=True
         )
 
         fig = px.bar(
-            df,
+            chart_df,
             x="Profit",
             y="Region",
             orientation="h",
             text="Profit",
-            title="Profit by Region"
+            title="Profit by Region",
         )
 
         fig.update_traces(
             texttemplate="₹%{text:,.0f}",
-            textposition="outside"
+            textposition="outside",
         )
 
         fig.update_layout(
             height=450,
-            showlegend=False
+            showlegend=False,
         )
 
         st.plotly_chart(
@@ -324,117 +309,80 @@ if page == "Executive Dashboard":
 
 elif page == "Regional Analysis":
 
-    st.header("🌎 Regional Analysis")
+    st.header("Regional Analysis")
 
-    region_data = data["region_data"]
+    df = pd.DataFrame(
+        data["region_data"],
+        columns=[
+            "Region",
+            "Sales",
+            "Profit",
+        ],
+    )
 
-    if not region_data:
+    df["Sales"] = pd.to_numeric(
+        df["Sales"],
+        errors="coerce"
+    )
 
-        st.warning("No regional data available.")
+    df["Profit"] = pd.to_numeric(
+        df["Profit"],
+        errors="coerce"
+    )
 
-    else:
+    df["Profit Margin"] = (
+        df["Profit"] / df["Sales"] * 100
+    ).fillna(0)
 
-        df = pd.DataFrame(
-            region_data,
-            columns=[
-                "Region",
-                "Sales",
-                "Profit"
-            ]
-        )
+    # CHART
 
-        df["Sales"] = pd.to_numeric(
-            df["Sales"],
-            errors="coerce"
-        )
+    fig = px.bar(
+        df.sort_values(
+            "Profit",
+            ascending=True
+        ),
+        x="Profit",
+        y="Region",
+        orientation="h",
+        text="Profit",
+        title="Profit by Region",
+    )
 
-        df["Profit"] = pd.to_numeric(
-            df["Profit"],
-            errors="coerce"
-        )
+    fig.update_traces(
+        texttemplate="₹%{text:,.0f}",
+        textposition="outside",
+    )
 
-        df["Profit Margin"] = (
-            df["Profit"] /
-            df["Sales"] *
-            100
-        ).fillna(0)
+    st.plotly_chart(
+        fig,
+        use_container_width=True
+    )
 
-        # CHART
+    # TABLE
 
-        fig = px.bar(
-            df.sort_values(
-                "Profit",
-                ascending=True
-            ),
-            x="Profit",
-            y="Region",
-            orientation="h",
-            text="Profit",
-            title="Profit by Region"
-        )
+    st.subheader("Regional Performance")
 
-        fig.update_traces(
-            texttemplate="₹%{text:,.0f}",
-            textposition="outside"
-        )
+    display_df = df.copy()
 
-        st.plotly_chart(
-            fig,
-            use_container_width=True
-        )
+    display_df["Sales"] = display_df["Sales"].map(
+        lambda x: f"₹{x:,.2f}"
+    )
 
-        # TABLE
+    display_df["Profit"] = display_df["Profit"].map(
+        lambda x: f"₹{x:,.2f}"
+    )
 
-        st.subheader("Regional Performance")
+    display_df["Profit Margin"] = display_df[
+        "Profit Margin"
+    ].map(
+        lambda x: f"{x:.2f}%"
+    )
 
-        display_df = df.copy()
-
-        display_df["Sales"] = display_df["Sales"].map(
-            lambda x: f"₹{x:,.2f}"
-        )
-
-        display_df["Profit"] = display_df["Profit"].map(
-            lambda x: f"₹{x:,.2f}"
-        )
-
-        display_df["Profit Margin"] = display_df[
-            "Profit Margin"
-        ].map(
-            lambda x: f"{x:.2f}%"
-        )
-
-        st.dataframe(
-            display_df,
-            use_container_width=True,
-            hide_index=True
-        )
-
-        # TOP REGIONS
-
-        st.subheader("Top 5 Regions by Profit")
-
-        top_regions = pd.DataFrame(
-            data["top_regions"],
-            columns=[
-                "Region",
-                "Sales",
-                "Profit"
-            ]
-        )
-
-        top_regions["Sales"] = top_regions["Sales"].map(
-            lambda x: f"₹{float(x):,.2f}"
-        )
-
-        top_regions["Profit"] = top_regions["Profit"].map(
-            lambda x: f"₹{float(x):,.2f}"
-        )
-
-        st.dataframe(
-            top_regions,
-            use_container_width=True,
-            hide_index=True
-        )
+    st.dataframe(
+        display_df,
+        use_container_width=True,
+        hide_index=True,
+    )
 
 
 # ============================================================
@@ -443,105 +391,66 @@ elif page == "Regional Analysis":
 
 elif page == "Category Analysis":
 
-    st.header("📦 Category Analysis")
+    st.header("Category Analysis")
 
-    category_data = data["category_data"]
+    df = pd.DataFrame(
+        data["category_data"],
+        columns=[
+            "Category",
+            "Sales",
+            "Profit",
+        ],
+    )
 
-    if not category_data:
+    df["Sales"] = pd.to_numeric(
+        df["Sales"],
+        errors="coerce"
+    )
 
-        st.warning("No category data available.")
+    df["Profit"] = pd.to_numeric(
+        df["Profit"],
+        errors="coerce"
+    )
 
-    else:
+    fig = px.bar(
+        df.sort_values(
+            "Profit",
+            ascending=True
+        ),
+        x="Profit",
+        y="Category",
+        orientation="h",
+        text="Profit",
+        title="Profit by Category",
+    )
 
-        df = pd.DataFrame(
-            category_data,
-            columns=[
-                "Category",
-                "Sales",
-                "Profit"
-            ]
-        )
+    fig.update_traces(
+        texttemplate="₹%{text:,.0f}",
+        textposition="outside",
+    )
 
-        df["Sales"] = pd.to_numeric(
-            df["Sales"],
-            errors="coerce"
-        )
+    st.plotly_chart(
+        fig,
+        use_container_width=True
+    )
 
-        df["Profit"] = pd.to_numeric(
-            df["Profit"],
-            errors="coerce"
-        )
+    st.subheader("Category Performance")
 
-        # CHART
+    display_df = df.copy()
 
-        fig = px.bar(
-            df.sort_values(
-                "Profit",
-                ascending=True
-            ),
-            x="Profit",
-            y="Category",
-            orientation="h",
-            text="Profit",
-            title="Profit by Category"
-        )
+    display_df["Sales"] = display_df["Sales"].map(
+        lambda x: f"₹{x:,.2f}"
+    )
 
-        fig.update_traces(
-            texttemplate="₹%{text:,.0f}",
-            textposition="outside"
-        )
+    display_df["Profit"] = display_df["Profit"].map(
+        lambda x: f"₹{x:,.2f}"
+    )
 
-        st.plotly_chart(
-            fig,
-            use_container_width=True
-        )
-
-        # TABLE
-
-        st.subheader("Category Performance")
-
-        display_df = df.copy()
-
-        display_df["Sales"] = display_df["Sales"].map(
-            lambda x: f"₹{x:,.2f}"
-        )
-
-        display_df["Profit"] = display_df["Profit"].map(
-            lambda x: f"₹{x:,.2f}"
-        )
-
-        st.dataframe(
-            display_df,
-            use_container_width=True,
-            hide_index=True
-        )
-
-        # TOP CATEGORIES
-
-        st.subheader("Top Categories by Profit")
-
-        top_cat = pd.DataFrame(
-            data["top_categories"],
-            columns=[
-                "Category",
-                "Sales",
-                "Profit"
-            ]
-        )
-
-        top_cat["Sales"] = top_cat["Sales"].map(
-            lambda x: f"₹{float(x):,.2f}"
-        )
-
-        top_cat["Profit"] = top_cat["Profit"].map(
-            lambda x: f"₹{float(x):,.2f}"
-        )
-
-        st.dataframe(
-            top_cat,
-            use_container_width=True,
-            hide_index=True
-        )
+    st.dataframe(
+        display_df,
+        use_container_width=True,
+        hide_index=True,
+    )
 
 
 # ============================================================
@@ -550,60 +459,60 @@ elif page == "Category Analysis":
 
 elif page == "Product Analysis":
 
-    st.header("🛍️ Product Analysis")
+    st.header("Product Analysis")
 
     # TOP SALES PRODUCTS
 
-    st.subheader("Top Products by Sales")
+    st.subheader("Top 10 Products by Sales")
 
-    sales_products = pd.DataFrame(
+    df = pd.DataFrame(
         data["top_products"],
         columns=[
             "Product",
             "Sales",
-            "Profit"
-        ]
+            "Profit",
+        ],
     )
 
-    sales_products["Sales"] = sales_products["Sales"].map(
+    df["Sales"] = df["Sales"].map(
         lambda x: f"₹{float(x):,.2f}"
     )
 
-    sales_products["Profit"] = sales_products["Profit"].map(
+    df["Profit"] = df["Profit"].map(
         lambda x: f"₹{float(x):,.2f}"
     )
 
     st.dataframe(
-        sales_products,
+        df,
         use_container_width=True,
-        hide_index=True
+        hide_index=True,
     )
 
     # TOP PROFIT PRODUCTS
 
-    st.subheader("Top Products by Profit")
+    st.subheader("Top 5 Products by Profit")
 
-    profit_products = pd.DataFrame(
+    df2 = pd.DataFrame(
         data["top_products_profit"],
         columns=[
             "Product",
             "Sales",
-            "Profit"
-        ]
+            "Profit",
+        ],
     )
 
-    profit_products["Sales"] = profit_products["Sales"].map(
+    df2["Sales"] = df2["Sales"].map(
         lambda x: f"₹{float(x):,.2f}"
     )
 
-    profit_products["Profit"] = profit_products["Profit"].map(
+    df2["Profit"] = df2["Profit"].map(
         lambda x: f"₹{float(x):,.2f}"
     )
 
     st.dataframe(
-        profit_products,
+        df2,
         use_container_width=True,
-        hide_index=True
+        hide_index=True,
     )
 
 
@@ -613,90 +522,78 @@ elif page == "Product Analysis":
 
 elif page == "Monthly Trends":
 
-    st.header("📈 Monthly Trends")
+    st.header("Monthly Trends")
 
-    monthly_data = data["monthly_data"]
+    df = pd.DataFrame(
+        data["monthly_data"],
+        columns=[
+            "Month",
+            "Sales",
+            "Profit",
+        ],
+    )
 
-    if not monthly_data:
+    df["Month"] = df["Month"].astype(str)
 
-        st.warning("No monthly data available.")
+    df["Sales"] = pd.to_numeric(
+        df["Sales"],
+        errors="coerce"
+    )
 
-    else:
+    df["Profit"] = pd.to_numeric(
+        df["Profit"],
+        errors="coerce"
+    )
 
-        df = pd.DataFrame(
-            monthly_data,
-            columns=[
-                "Month",
-                "Sales",
-                "Profit"
-            ]
+    # SALES
+
+    st.subheader("Monthly Sales")
+
+    fig1 = px.line(
+        df,
+        x="Month",
+        y="Sales",
+        markers=True,
+        title="Monthly Sales Trend",
+    )
+
+    fig1.update_traces(
+        hovertemplate=(
+            "<b>%{x}</b><br>"
+            "Sales: ₹%{y:,.2f}"
+            "<extra></extra>"
         )
+    )
 
-        df["Month"] = df["Month"].astype(str)
+    st.plotly_chart(
+        fig1,
+        use_container_width=True
+    )
 
-        df["Sales"] = pd.to_numeric(
-            df["Sales"],
-            errors="coerce"
+    # PROFIT
+
+    st.subheader("Monthly Profit")
+
+    fig2 = px.line(
+        df,
+        x="Month",
+        y="Profit",
+        markers=True,
+        title="Monthly Profit Trend",
+    )
+
+    fig2.update_traces(
+        hovertemplate=(
+            "<b>%{x}</b><br>"
+            "Profit: ₹%{y:,.2f}"
+            "<extra></extra>"
         )
+    )
 
-        df["Profit"] = pd.to_numeric(
-            df["Profit"],
-            errors="coerce"
-        )
-
-        # SALES
-
-        st.subheader("Monthly Sales")
-
-        sales_fig = px.line(
-            df,
-            x="Month",
-            y="Sales",
-            markers=True,
-            title="Monthly Sales Trend"
-        )
-
-        st.plotly_chart(
-            sales_fig,
-            use_container_width=True
-        )
-
-        # PROFIT
-
-        st.subheader("Monthly Profit")
-
-        profit_fig = px.line(
-            df,
-            x="Month",
-            y="Profit",
-            markers=True,
-            title="Monthly Profit Trend"
-        )
-
-        st.plotly_chart(
-            profit_fig,
-            use_container_width=True
-        )
-
-        # TABLE
-
-        st.subheader("Monthly Performance Data")
-
-        display_df = df.copy()
-
-        display_df["Sales"] = display_df["Sales"].map(
-            lambda x: f"₹{x:,.2f}"
-        )
-
-        display_df["Profit"] = display_df["Profit"].map(
-            lambda x: f"₹{x:,.2f}"
-        )
-
-        st.dataframe(
-            display_df,
-            use_container_width=True,
-            hide_index=True
-        )
+    st.plotly_chart(
+        fig2,
+        use_container_width=True
+    )
 
 
 # ============================================================
@@ -705,10 +602,10 @@ elif page == "Monthly Trends":
 
 elif page == "Ask the Analyst":
 
-    st.header("🤖 Ask the Analyst")
+    st.header("Ask the Analyst")
 
     st.write(
-        "Ask a business question about your sales data."
+        "Ask questions about your business data."
     )
 
     question = st.text_input(
@@ -725,7 +622,8 @@ elif page == "Ask the Analyst":
         if "average order value" in q:
 
             st.success(
-                f"Average order value: ₹{average_order_value:,.2f}"
+                f"Average Order Value: "
+                f"₹{average_order_value:,.2f}"
             )
 
         # PROFIT MARGIN
@@ -733,7 +631,8 @@ elif page == "Ask the Analyst":
         elif "profit margin" in q:
 
             st.success(
-                f"Overall profit margin: {profit_margin:.2f}%"
+                f"Overall Profit Margin: "
+                f"{profit_margin:.2f}%"
             )
 
         # TOTAL ORDERS
@@ -745,7 +644,7 @@ elif page == "Ask the Analyst":
         ):
 
             st.success(
-                f"Total orders: {total_orders:,}"
+                f"Total Orders: {total_orders:,}"
             )
 
         # TOTAL SALES
@@ -756,7 +655,7 @@ elif page == "Ask the Analyst":
         ):
 
             st.success(
-                f"Total sales: ₹{sales:,.2f}"
+                f"Total Sales: ₹{sales:,.2f}"
             )
 
         # TOTAL PROFIT
@@ -764,7 +663,7 @@ elif page == "Ask the Analyst":
         elif "total profit" in q:
 
             st.success(
-                f"Total profit: ₹{profit:,.2f}"
+                f"Total Profit: ₹{profit:,.2f}"
             )
 
         # HIGHEST PROFIT REGION
@@ -776,40 +675,42 @@ elif page == "Ask the Analyst":
 
             rows = data["region_data"]
 
-            if rows:
+            best = max(
+                rows,
+                key=lambda x: float(x[2])
+            )
 
-                best = max(
-                    rows,
-                    key=lambda x: float(x[2])
-                )
-
-                st.success(
-                    f"The region with the highest profit "
-                    f"is {best[0]}, with profit of "
-                    f"₹{float(best[2]):,.2f}."
-                )
+            st.success(
+                f"The region with the highest "
+                f"profit is **{best[0]}**, "
+                f"with profit of "
+                f"₹{float(best[2]):,.2f}."
+            )
 
         # LOWEST PROFIT REGION
 
         elif (
-            "lowest profit" in q
+            (
+                "lowest profit" in q
+                or "lowest" in q
+                or "bottom" in q
+            )
             and "region" in q
         ):
 
             rows = data["region_data"]
 
-            if rows:
+            worst = min(
+                rows,
+                key=lambda x: float(x[2])
+            )
 
-                worst = min(
-                    rows,
-                    key=lambda x: float(x[2])
-                )
-
-                st.success(
-                    f"The region with the lowest profit "
-                    f"is {worst[0]}, with profit of "
-                    f"₹{float(worst[2]):,.2f}."
-                )
+            st.success(
+                f"The region with the lowest "
+                f"profit is **{worst[0]}**, "
+                f"with profit of "
+                f"₹{float(worst[2]):,.2f}."
+            )
 
         # HIGHEST PROFIT CATEGORY
 
@@ -820,18 +721,17 @@ elif page == "Ask the Analyst":
 
             rows = data["category_data"]
 
-            if rows:
+            best = max(
+                rows,
+                key=lambda x: float(x[2])
+            )
 
-                best = max(
-                    rows,
-                    key=lambda x: float(x[2])
-                )
-
-                st.success(
-                    f"The category with the highest profit "
-                    f"is {best[0]}, with profit of "
-                    f"₹{float(best[2]):,.2f}."
-                )
+            st.success(
+                f"The category with the highest "
+                f"profit is **{best[0]}**, "
+                f"with profit of "
+                f"₹{float(best[2]):,.2f}."
+            )
 
         # HIGHEST SALES REGION
 
@@ -842,13 +742,12 @@ elif page == "Ask the Analyst":
 
             region = data["highest_region"]
 
-            if region:
-
-                st.success(
-                    f"The region with the highest sales "
-                    f"is {region[0]}, with sales of "
-                    f"₹{float(region[1]):,.2f}."
-                )
+            st.success(
+                f"The region with the highest "
+                f"sales is **{region[0]}**, "
+                f"with sales of "
+                f"₹{float(region[1]):,.2f}."
+            )
 
         # HIGHEST SALES CATEGORY
 
@@ -859,13 +758,12 @@ elif page == "Ask the Analyst":
 
             category = data["highest_category"]
 
-            if category:
-
-                st.success(
-                    f"The category with the highest sales "
-                    f"is {category[0]}, with sales of "
-                    f"₹{float(category[1]):,.2f}."
-                )
+            st.success(
+                f"The category with the highest "
+                f"sales is **{category[0]}**, "
+                f"with sales of "
+                f"₹{float(category[1]):,.2f}."
+            )
 
         # TOP REGIONS
 
@@ -879,8 +777,8 @@ elif page == "Ask the Analyst":
                 columns=[
                     "Region",
                     "Sales",
-                    "Profit"
-                ]
+                    "Profit",
+                ],
             )
 
             result["Sales"] = result["Sales"].map(
@@ -891,12 +789,10 @@ elif page == "Ask the Analyst":
                 lambda x: f"₹{float(x):,.2f}"
             )
 
-            st.subheader("Top 5 Regions by Profit")
-
             st.dataframe(
                 result,
                 use_container_width=True,
-                hide_index=True
+                hide_index=True,
             )
 
         # COMPARE REGIONS
@@ -907,20 +803,19 @@ elif page == "Ask the Analyst":
                 "west",
                 "east",
                 "south",
-                "central"
+                "central",
             ]
 
             found = [
-                region
-                for region in regions
-                if region in q
+                r for r in regions
+                if r in q
             ]
 
             if len(found) >= 2:
 
                 result = compare_regions(
-                    found[0].title(),
-                    found[1].title()
+                    found[0],
+                    found[1]
                 )
 
                 result_map = {
@@ -929,33 +824,28 @@ elif page == "Ask the Analyst":
                 }
 
                 first = result_map.get(found[0])
-
                 second = result_map.get(found[1])
 
                 if first and second:
 
                     first_profit = float(first[2])
-
                     second_profit = float(second[2])
+
+                    difference = abs(
+                        first_profit - second_profit
+                    )
 
                     if first_profit >= second_profit:
 
-                        winner = first
-                        loser = second
+                        winner = first[0]
 
                     else:
 
-                        winner = second
-                        loser = first
-
-                    difference = abs(
-                        first_profit -
-                        second_profit
-                    )
+                        winner = second[0]
 
                     st.success(
-                        f"{winner[0]} is more profitable "
-                        f"than {loser[0]}."
+                        f"**{winner}** is more "
+                        f"profitable."
                     )
 
                     c1, c2, c3 = st.columns(3)
@@ -971,7 +861,7 @@ elif page == "Ask the Analyst":
                     )
 
                     c3.metric(
-                        "Profit Difference",
+                        "Difference",
                         f"₹{difference:,.2f}"
                     )
 
@@ -993,7 +883,7 @@ elif page == "Ask the Analyst":
 
             st.info(
                 """
-                Try questions like:
+                Try:
 
                 • What is the average order value?
 
@@ -1007,7 +897,7 @@ elif page == "Ask the Analyst":
 
                 • Which region has the highest sales?
 
-                • Show me the top 5 regions by profit
+                • Show top regions
 
                 • Compare West and East
                 """
